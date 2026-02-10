@@ -1,0 +1,15 @@
+pre-commit:
+  parallel: true
+  commands:
+    # 任务 1: 格式化 (oxfmt)
+    formatter:
+      glob: "*.{js,ts,jsx,tsx,json,css,html,md,yaml}"
+      # --write: 写入文件
+      # && git add: 依然需要重新 add，因为文件被修改了
+      run: pnpm exec oxfmt --write {staged_files} && git add {staged_files}
+
+    # 任务 2: 代码质量检查 (oxlint)
+    linter:
+      glob: "*.{js,ts,jsx,tsx}"
+      # --deny-warnings: 拒绝警告，确保代码库纯净
+      run: pnpm exec oxlint {staged_files} --deny-warnings
