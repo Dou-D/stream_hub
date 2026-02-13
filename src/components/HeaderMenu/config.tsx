@@ -1,11 +1,4 @@
-import {
-  ArrowDownToLine,
-  Gem,
-  Mail,
-  Megaphone,
-  Upload,
-  Wallpaper,
-} from "lucide-react";
+import { ArrowDownToLine, Gem, Mail, Megaphone, Upload, Wallpaper } from "lucide-react";
 
 export type HeaderMenuTypes = {
   icon: React.ReactNode;

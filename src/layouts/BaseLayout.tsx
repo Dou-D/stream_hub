@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { HeaderMenu } from "@/components/HeaderMenu";
@@ -38,7 +38,7 @@ const BaseLayout = () => {
 
       <div className="bg-gray-300 max-lg:col-span-2 row-span-2">
         <main className="min-h-full">
-          {/* <Outlet /> */}
+          <Outlet />
           content
         </main>
       </div>
