@@ -1,11 +1,11 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useAuthGuard } from "@/features/auth/hooks";
-import { useUIStore } from "@/store";
+import { useUIStore } from "@/store/uiStore";
 import { AuthModal } from "@/features/auth/components/AuthModal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 vi.mock("@/features/auth/hooks");
-vi.mock("@/store");
+vi.mock("@/store/uiStore");
 
 const queryClient = new QueryClient();
 function AuthModalMock() {
@@ -29,7 +29,8 @@ describe("AuthModal Component", () => {
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,
       setAuthModalState: setAuthModalStateMock,
-    } as any);
+      a: 1,
+    });
     // Act
     render(<AuthModalMock />);
     // Assert
@@ -43,7 +44,7 @@ describe("AuthModal Component", () => {
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: false,
       setAuthModalState: setAuthModalStateMock,
-    } as any);
+    });
     // Act
     render(<AuthModalMock />);
     // Assert
@@ -55,7 +56,7 @@ describe("AuthModal Component", () => {
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,
       setAuthModalState: vi.fn(),
-    } as any);
+    });
     // Act
     render(<AuthModalMock />);
     const switchBtn = screen.getByText(/还没有账号/);
@@ -69,7 +70,7 @@ describe("AuthModal Component", () => {
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,
       setAuthModalState: setAuthModalStateMock,
-    } as any);
+    });
     // Act
     render(<AuthModalMock />);
     const closeBtn = screen.getByText(/关闭/);
