@@ -1,5 +1,4 @@
 pre-commit:
-  parallel: true
   commands:
     # 任务 1: 格式化 (oxfmt)
     formatter:
@@ -13,3 +12,7 @@ pre-commit:
       glob: "*.{js,ts,jsx,tsx}"
       # --deny-warnings: 拒绝警告，确保代码库纯净
       run: pnpm exec oxlint {staged_files} --deny-warnings
+
+    # 任务 3: 单元测试
+    tests:
+      run: pnpm exec vitest related {staged_files} --run

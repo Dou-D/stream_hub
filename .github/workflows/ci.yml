@@ -1,0 +1,40 @@
+name: CI
+on:
+  # 1. 只要有人想合并代码，就检查
+  pull_request:
+    branches: [dev, main]
+  # 2. 直接向 dev 或 main 分支 push 代码时，也检查
+  push:
+    branches: [dev, main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: pnpm
+      # 安装项目依赖
+      - run: pnpm install --frozen-lockfile
+
+      # 只检查，不修复。如果有问题直接报错。
+      - run: pnpm run fmt:check
+      - run: pnpm run lint
+  test:
+    needs: lint # 可选：只有 Lint 过了才跑测试，省资源
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: pnpm
+      # 安装项目依赖
+      - run: pnpm install --frozen-lockfile
+
+      # 运行 Vitest 全量测试
+      - run: pnpm run test
