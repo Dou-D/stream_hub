@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
-import { useAuthGuard } from "@/features/auth/hooks";
+import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
 import { useUIStore } from "@/store";
 import { AuthModal } from "@/features/auth/components/AuthModal";
 import { login } from "@/features/auth/api";
@@ -21,7 +21,7 @@ function renderAuthModal() {
 
   return { ...AuthModalMock, user };
 }
-vi.mock("@/features/auth/hooks");
+vi.mock("@/features/auth/hooks/useAuthGuard");
 vi.mock("@/store");
 vi.mock("@/features/auth/api");
 
@@ -40,8 +40,8 @@ describe("LoginCard Component", () => {
       setAuthModalState: setAuthModalStateMock,
     });
     const { user } = renderAuthModal();
-    const emailInput = screen.getByLabelText("Email");
-    const passwordInput = screen.getByLabelText("Password");
+    const emailInput = screen.getByLabelText("邮箱");
+    const passwordInput = screen.getByLabelText("密码");
     const loginButton = screen.getByRole("button", { name: "登录" });
     // Act
     await user.click(loginButton);
@@ -62,8 +62,8 @@ describe("LoginCard Component", () => {
       setAuthModalState: setAuthModalStateMock,
     });
     const { user } = renderAuthModal();
-    const emailInput = screen.getByLabelText("Email");
-    const passwordInput = screen.getByLabelText("Password");
+    const emailInput = screen.getByLabelText("邮箱");
+    const passwordInput = screen.getByLabelText("密码");
     const loginButton = screen.getByRole("button", { name: "登录" });
     // Act
     await user.click(loginButton);
@@ -73,7 +73,7 @@ describe("LoginCard Component", () => {
     expect(screen.queryByText(/请输入正确的邮箱格式/)).not.toBeInTheDocument();
     expect(screen.queryByText(/密码长度不能少于6位/)).not.toBeInTheDocument();
   });
-  it("should the button render '正在登录' when login is in progress", async () => {
+  it("should the button render Spinner when login is in progress", async () => {
     // Arrange
     const setAuthModalStateMock = vi.fn();
     vi.mocked(useAuthGuard).mockReturnValue({
@@ -85,15 +85,14 @@ describe("LoginCard Component", () => {
     });
     vi.mocked(login).mockImplementation(() => new Promise(() => {})); // 模拟一个永远不结束的登录请求
     const { user } = renderAuthModal();
-    const emailInput = screen.getByLabelText("Email");
-    const passwordInput = screen.getByLabelText("Password");
+    const emailInput = screen.getByLabelText("邮箱");
+    const passwordInput = screen.getByLabelText("密码");
     const loginButton = screen.getByRole("button", { name: "登录" });
     // Act
     await user.type(emailInput, "example@example.com");
     await user.type(passwordInput, "123456");
     await user.click(loginButton);
-
     // Assert
-    expect(screen.getByRole("button", { name: "正在登录" })).toBeInTheDocument();
+    expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
 });
