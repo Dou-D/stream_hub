@@ -34,7 +34,12 @@ service.interceptors.request.use(
 
 // 3. 响应拦截器
 service.interceptors.response.use(
-  (response: AxiosResponse) => response.data,
+  (response: AxiosResponse) => {
+    let res = response.data;
+    // 拦截后端返回的错误
+    if (res.status !== 200) throw new Error(res.message);
+    return res;
+  },
   (error: AxiosError) => {
     let message = "";
     switch (error.response?.status) {
