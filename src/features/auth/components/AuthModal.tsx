@@ -30,24 +30,39 @@ export const AuthModal: React.FC = () => {
   return (
     <AlertDialog open={isAuthOpen} onOpenChange={(o) => setAuthModalState(o)}>
       <AlertDialogTrigger asChild>
-        <Button>登录</Button>
+        <Button type="button">登录</Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="w-full p-0">
-        <AlertDialogTitle className="flex justify-end p-2">
-          {/* 关闭按钮 */}
-          <AlertDialogCancel>
-            <span className="sr-only">关闭</span>
-            <X className="h-6 w-6" />
-          </AlertDialogCancel>
-          <AlertDialogDescription>
-            {/* 占位符,AlertDialogContent必须要求有一个AlertDialogDescription,否则控制台有warning */}
-          </AlertDialogDescription>
-        </AlertDialogTitle>
+      <AlertDialogContent className="w-full max-w-[calc(100%-1.5rem)] border-0 bg-transparent p-0 shadow-none sm:max-w-md">
+        <div className="relative overflow-hidden rounded-2xl border bg-background/95 shadow-2xl backdrop-blur-sm">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(85%_80%_at_50%_-10%,hsl(var(--primary)/0.18),transparent)]" />
+          <div className="relative p-5 sm:p-6">
+            <AlertDialogTitle className="mb-5 flex items-start justify-between">
+              <div className="space-y-1">
+                <p className="text-base font-semibold">{isLogin ? "欢迎回来" : "创建账号"}</p>
+                <p className="text-muted-foreground text-sm">
+                  {isLogin ? "输入邮箱和密码继续使用 Stream Hub" : "填写信息并完成邮箱验证"}
+                </p>
+              </div>
+              <AlertDialogCancel variant="ghost" size="icon-sm" className="rounded-full">
+                <span className="sr-only">关闭</span>
+                <X className="h-5 w-5" />
+              </AlertDialogCancel>
+            </AlertDialogTitle>
 
-        {isLogin ? <LoginCard /> : <RegisterCard />}
-        <Button variant="link" onClick={handleSwitch} className="pb-4">
-          {isLogin ? "还没有账号?" : "去登录"}
-        </Button>
+            {isLogin ? <LoginCard /> : <RegisterCard />}
+
+            <Button
+              variant="ghost"
+              onClick={handleSwitch}
+              className="text-muted-foreground hover:text-foreground mt-4 w-full rounded-lg"
+            >
+              {isLogin ? "还没有账号?" : "去登录"}
+            </Button>
+          </div>
+        </div>
+        <AlertDialogDescription className="sr-only">
+          用户认证弹窗，支持登录和注册切换
+        </AlertDialogDescription>
       </AlertDialogContent>
     </AlertDialog>
   );

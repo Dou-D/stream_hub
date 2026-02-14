@@ -8,38 +8,38 @@ import { HeaderMenu } from "@/components/HeaderMenu";
 
 const BaseLayout = () => {
   return (
-    // 侧边栏占一整列 header与main占一整列
-    <div className="h-screen w-screen grid grid-cols-[240px_1fr] grid-rows-[64px_1fr]">
-      <div className="hidden lg:block md:row-span-2 bg-gray-500 overflow-y-auto">
-        <aside className="p-4">侧边栏</aside>
-      </div>
-      {/* 小于lg时，header占一整行 */}
-      <header className="w-full grid grid-cols-3 items-center ">
-        {/* search input */}
-        <div className="col-span-2 justify-self-center">
-          <Field className="w-xs">
-            <ButtonGroup>
-              <Input
-                id="input-button-group"
-                className="rounded-full w-full"
-                placeholder="Type to search..."
-              />
-              <Button className="rounded-full" variant="outline">
-                <Search />
-              </Button>
-            </ButtonGroup>
-          </Field>
+    <div className="grid min-h-screen w-full grid-cols-1 bg-muted/30 lg:grid-cols-[240px_1fr]">
+      <aside className="hidden border-r bg-background lg:block">
+        <div className="h-full overflow-y-auto p-4">
+          <p className="text-sm font-medium">侧边栏</p>
         </div>
-        {/* header menu */}
-        <div className="w-full justify-self-end">
-          <HeaderMenu />
-        </div>
-      </header>
+      </aside>
 
-      <div className="bg-gray-300 max-lg:col-span-2 row-span-2">
-        <main className="min-h-full">
-          <Outlet />
-          content
+      <div className="grid min-h-screen grid-rows-[64px_1fr] overflow-hidden">
+        <header className="bg-background/95 supports-[backdrop-filter]:bg-background/80 sticky top-0 z-20 border-b backdrop-blur">
+          <div className="mx-auto grid h-full w-full max-w-7xl grid-cols-[1fr_auto] items-center gap-4 px-4 sm:px-6">
+            <Field className="w-full max-w-xl">
+              <ButtonGroup className="w-full">
+                <Input
+                  id="input-button-group"
+                  className="w-full rounded-l-full"
+                  placeholder="Type to search..."
+                />
+                <Button className="rounded-r-full px-4" variant="outline" aria-label="搜索">
+                  <Search />
+                </Button>
+              </ButtonGroup>
+            </Field>
+            <div className="justify-self-end">
+              <HeaderMenu />
+            </div>
+          </div>
+        </header>
+
+        <main className="h-full overflow-y-auto">
+          <div className="mx-auto w-full max-w-7xl p-4 sm:p-6">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
