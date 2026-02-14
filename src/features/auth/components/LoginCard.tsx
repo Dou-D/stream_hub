@@ -3,11 +3,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { PasswordInput } from "@/features/auth/components/PasswordInput";
+import { EmailInput } from "@/features/auth/components/EmailInput";
 
 const loginSchema = z.object({
   email: z.email({ message: "请输入正确的邮箱格式" }),
@@ -25,64 +25,33 @@ export const LoginCard: React.FC = () => {
   });
   const { loginMutation } = useAuth();
   const { mutate: loginMutate, isPending } = loginMutation;
-  const onSubmit: SubmitHandler<LoginInputs> = (data) => {
-    loginMutate({
-      email: data.email,
-      password: data.password,
-    });
-  };
+  const onSubmit: SubmitHandler<LoginInputs> = (data) => loginMutate(data);
   return (
-    <Card className="sm:w-full">
-      <CardHeader>
-        <CardTitle>密码登录</CardTitle>
+    <Card className="w-full gap-0 rounded-none border-0 bg-transparent py-0 shadow-none">
+      <CardHeader className="space-y-1 px-0">
+        <CardTitle className="text-xl">密码登录</CardTitle>
         <CardDescription>输入您的邮箱和密码登录</CardDescription>
       </CardHeader>
-      <CardContent className="h-85">
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          noValidate
-          className="flex flex-col gap-6 w-full items-center"
-        >
-          <div className="flex flex-col gap-10 w-full">
+      <CardContent className="px-0 pb-0">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex w-full flex-col gap-6">
+          <div className="flex w-full flex-col gap-5">
             {/* 邮箱输入框 */}
-            <div className="grid gap-2">
-              {/* 只有在有错误时才显示提示 */}
-              <Field data-invalid={!!errors.email}>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                {/* 邮箱格式正确时不显示提示 */}
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="请输入邮箱"
-                  aria-invalid={!!errors.email}
-                  {...register("email")}
-                  disabled={isPending}
-                />
-                <FieldDescription>{errors.email?.message}</FieldDescription>
-              </Field>
-            </div>
+            <EmailInput label="邮箱" errorMsg={errors.email?.message} {...register("email")} />
             {/* 密码输入框 */}
-            <div className="grid gap-2">
-              <Field data-invalid={!!errors.password}>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
-                <Input
-                  id="password"
-                  placeholder="请输入密码"
-                  aria-invalid={!!errors.password}
-                  {...register("password")}
-                  disabled={isPending}
-                />
-                <FieldDescription>{errors.password?.message}</FieldDescription>
-              </Field>
-            </div>
+            <PasswordInput
+              label="密码"
+              errorMsg={errors.password?.message}
+              {...register("password")}
+            />
           </div>
           <Button
             type="submit"
-            className="w-1/2"
+            className="h-10 w-full rounded-lg"
             disabled={isPending}
             aria-label={isPending ? "正在登录" : "登录"}
           >
-            {isPending ? <Spinner data-icon="inline-start" /> : "登录"}
+            <span className="sr-only">登录按钮</span>
+            {isPending ? <Spinner data-icon="inline-start" role="progressbar" /> : "登录"}
           </Button>
         </form>
       </CardContent>
