@@ -125,7 +125,7 @@ describe("useAuth", () => {
     await act(async () => {
       await result.current.registerMutation.mutateAsync({
         email: "example@example.com",
-        verifyCode: "123456",
+        verification_code: "123456",
         password: "123456",
       });
     });
@@ -150,7 +150,7 @@ describe("useAuth", () => {
       await expect(
         result.current.registerMutation.mutateAsync({
           email: "example@example.com",
-          verifyCode: "123456",
+          verification_code: "123456",
           password: "123456",
         }),
       ).rejects.toThrow("注册失败");
