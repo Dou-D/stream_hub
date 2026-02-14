@@ -4,7 +4,7 @@ import { useUIStore } from "@/store/uiStore";
 import { AuthModal } from "@/features/auth/components/AuthModal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-vi.mock("@/features/auth/hooks");
+vi.mock("@/features/auth/hooks/useAuthGuard");
 vi.mock("@/store/uiStore");
 
 const queryClient = new QueryClient();
