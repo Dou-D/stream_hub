@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useUIStore } from "@/store";
 import { useAuthStore } from "@/store/authStore";
-import { login, register } from "@/features/auth/api";
+import { login, register, verify } from "@/features/auth/api";
 
 export const useAuth = () => {
   const { setAuthModalState } = useUIStore();
@@ -49,8 +49,19 @@ export const useAuth = () => {
       });
     },
   });
+  const verifyMutation = useMutation({
+    mutationFn: verify,
+    onMutate: () => {},
+    // 请求失败，取消倒计时 并显示错误信息
+    onError: (err) => {
+      toast.error(err.message, {
+        position: "top-center",
+      });
+    },
+  });
   return {
     loginMutation,
     registerMutation,
+    verifyMutation,
   };
 };
