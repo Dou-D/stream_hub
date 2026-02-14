@@ -21,7 +21,7 @@ function renderAuthModal() {
   return { ...AuthModalMock, user };
 }
 
-vi.mock("@/features/auth/hooks");
+vi.mock("@/features/auth/hooks/useAuthGuard");
 vi.mock("@/store");
 
 describe("PasswordInput Component", () => {

@@ -6,8 +6,11 @@ import { useAuth } from "@/features/auth/hooks";
 import { useUIStore } from "@/store";
 import { useAuthStore } from "@/store/authStore";
 
-vi.mock("@/features/auth/api", () => ({
+vi.mock("@/features/auth/api/login", () => ({
   login: vi.fn(),
+}));
+
+vi.mock("@/features/auth/api/register", () => ({
   register: vi.fn(),
 }));
 
