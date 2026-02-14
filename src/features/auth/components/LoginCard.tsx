@@ -8,13 +8,9 @@ import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { PasswordInput } from "@/features/auth/components/PasswordInput";
 import { EmailInput } from "@/features/auth/components/EmailInput";
+import { loginSchema } from "@/features/auth/schema";
+type LoginInputs = z.infer<typeof loginSchema>;
 
-const loginSchema = z.object({
-  email: z.email({ message: "请输入正确的邮箱格式" }),
-  password: z.string().min(6, { message: "密码长度不能少于6位" }),
-});
-
-export type LoginInputs = z.infer<typeof loginSchema>;
 export const LoginCard: React.FC = () => {
   const {
     register,
