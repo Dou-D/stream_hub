@@ -3,33 +3,29 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useForm, type SubmitHandler } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { ButtonGroup } from "@/components/ui/button-group";
 import { PasswordInput } from "@/features/auth/components/PasswordInput";
 import { EmailInput } from "@/features/auth/components/EmailInput";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { VerifyInput } from "@/features/auth/components/VerifyInput";
+import { registerSchema } from "@/features/auth/schema";
 
-const registerSchema = z.object({
-  email: z.email({ message: "请输入正确的邮箱格式" }),
-  verification_code: z.string().length(6, { message: "验证码只能为6位数字" }),
-  password: z.string().refine((val) => val.length === 6, { message: "密码长度不能少于6位" }),
-});
-
-export type RegisterInputs = z.infer<typeof registerSchema>;
+type RegisterInputs = z.infer<typeof registerSchema>;
 
 export const RegisterCard: React.FC = () => {
   const { registerMutation } = useAuth();
   const {
     register,
     handleSubmit,
+    watch,
+    trigger,
     formState: { errors },
-  } = useForm({
+  } = useForm<RegisterInputs>({
     resolver: zodResolver(registerSchema),
   });
   const { mutate: registerMutate, isPending } = registerMutation;
   const onSubmit: SubmitHandler<RegisterInputs> = (data) => registerMutate(data);
+  const emailValue = watch("email", "");
   return (
     <Card className="w-full gap-0 rounded-none border-0 bg-transparent py-0 shadow-none">
       <CardHeader className="space-y-1 px-0">
@@ -42,25 +38,13 @@ export const RegisterCard: React.FC = () => {
             {/* 邮箱输入框 */}
             <EmailInput label="邮箱" errorMsg={errors.email?.message} {...register("email")} />
             {/* 验证码输入框 */}
-            <div className="grid gap-2">
-              <Field data-invalid={!!errors.verification_code}>
-                <FieldLabel htmlFor="verification_code">验证码</FieldLabel>
-                <ButtonGroup className="w-full">
-                  <Input
-                    id="verification_code"
-                    type="number"
-                    placeholder="123456"
-                    aria-invalid={!!errors.verification_code}
-                    className="h-10 rounded-l-lg"
-                    {...register("verification_code")}
-                  />
-                  <Button variant="outline" className="h-10 rounded-r-lg px-4">
-                    获取验证码
-                  </Button>
-                </ButtonGroup>
-                <FieldDescription>{errors.verification_code?.message}</FieldDescription>
-              </Field>
-            </div>
+            <VerifyInput
+              label="验证码"
+              email={emailValue}
+              validateEmailBeforeSend={() => trigger("email")}
+              errorMsg={errors.verification_code?.message}
+              {...register("verification_code")}
+            />
             {/* 密码输入框 */}
             <PasswordInput
               label="密码"
