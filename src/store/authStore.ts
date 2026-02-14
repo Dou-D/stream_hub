@@ -1,18 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-type SetTokensParams = {
-  access_token: string;
-  refresh_token: string;
-};
-
-interface AuthState {
-  user: UserProfile | null;
-  access_token: string | null;
-  refresh_token: string | null;
-  setTokens: (params: SetTokensParams) => void;
-}
-
 interface UserProfile {
   avatar_url: string; // 头像
   background_url: string; // 背景图
@@ -26,7 +14,22 @@ interface UserProfile {
   work_count: number; // 作品数
 }
 
-export const useAuthStore = create<AuthState>()(
+interface AuthState {
+  user: UserProfile | null;
+  access_token: string | null;
+  refresh_token: string | null;
+}
+type SetTokensParams = {
+  access_token: string;
+  refresh_token: string;
+};
+// 2. 定义操作方法 (Keys 和 Value 都是必要的)
+interface AuthActions {
+  setTokens: (params: SetTokensParams) => void;
+  logout: () => void;
+}
+
+export const useAuthStore = create<AuthState & AuthActions>()(
   persist(
     (set) => ({
       user: null,
