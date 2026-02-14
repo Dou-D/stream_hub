@@ -1,4 +1,4 @@
-name: Autofix
+name: autofix.ci
 on:
   pull_request:
     # 只监听针对 dev 或 main 的 PR
