@@ -13,7 +13,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 
 const registerSchema = z.object({
   email: z.email({ message: "请输入正确的邮箱格式" }),
-  verifyCode: z.string().length(6, { message: "验证码只能为6位数字" }),
+  verification_code: z.string().length(6, { message: "验证码只能为6位数字" }),
   password: z.string().refine((val) => val.length === 6, { message: "密码长度不能少于6位" }),
 });
 
@@ -43,22 +43,22 @@ export const RegisterCard: React.FC = () => {
             <EmailInput label="邮箱" errorMsg={errors.email?.message} {...register("email")} />
             {/* 验证码输入框 */}
             <div className="grid gap-2">
-              <Field data-invalid={!!errors.verifyCode}>
-                <FieldLabel htmlFor="verifyCode">验证码</FieldLabel>
+              <Field data-invalid={!!errors.verification_code}>
+                <FieldLabel htmlFor="verification_code">验证码</FieldLabel>
                 <ButtonGroup className="w-full">
                   <Input
-                    id="verifyCode"
+                    id="verification_code"
                     type="number"
                     placeholder="123456"
-                    aria-invalid={!!errors.verifyCode}
+                    aria-invalid={!!errors.verification_code}
                     className="h-10 rounded-l-lg"
-                    {...register("verifyCode")}
+                    {...register("verification_code")}
                   />
                   <Button variant="outline" className="h-10 rounded-r-lg px-4">
                     获取验证码
                   </Button>
                 </ButtonGroup>
-                <FieldDescription>{errors.verifyCode?.message}</FieldDescription>
+                <FieldDescription>{errors.verification_code?.message}</FieldDescription>
               </Field>
             </div>
             {/* 密码输入框 */}
