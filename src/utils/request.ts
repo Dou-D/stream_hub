@@ -17,12 +17,6 @@ type RetryableRequestConfig = InternalAxiosRequestConfig & {
 const TokenSchema = authResponseSchema.shape.data;
 type TokenData = z.infer<typeof TokenSchema>;
 
-type ApiResponse<T = unknown> = {
-  status: number;
-  message: string;
-  data: T;
-};
-
 const handleAuthExpired = () => {
   useAuthStore.getState().logout();
 };
@@ -43,6 +37,12 @@ const refreshClient: AxiosInstance = axios.create({
     "Content-Type": "application/json;charset=utf-8",
   },
 });
+
+interface ApiResponse<T = unknown> {
+  status: number;
+  message: string;
+  data: T;
+}
 
 // 刷新 token 的 Promise，确保同时只有一个刷新请求在进行
 let refreshPromise: Promise<TokenData> | null = null;
@@ -98,8 +98,9 @@ service.interceptors.request.use(
 
 // 3. 响应拦截器
 service.interceptors.response.use(
-  (response: AxiosResponse) => {
-    const res = response.data as ApiResponse;
+  // @ts-expect-error response.data: ApiResponse 类型
+  (response: AxiosResponse<ApiResponse>) => {
+    const res = response.data;
     const originalRequest = response.config as RetryableRequestConfig;
 
     if (res.status === 403) {
@@ -116,8 +117,8 @@ service.interceptors.response.use(
     }
 
     if (res.status !== 200) throw new Error(res.message);
-
-    return response;
+    // 请求成功，返回 ApiResponse 部分
+    return res;
   },
   (error: AxiosError) => {
     let message = "";
@@ -159,21 +160,17 @@ service.interceptors.response.use(
 
 // 4. 封装通用请求方法
 const request = {
-  get: <T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    return service.get<T>(url, config).then((response) => response.data);
-  },
+  get: <T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> =>
+    service.get(url, config),
 
-  post: <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> => {
-    return service.post<T>(url, data, config).then((response) => response.data);
-  },
+  post: <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> =>
+    service.post(url, data, config),
 
-  put: <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> => {
-    return service.put<T>(url, data, config).then((response) => response.data);
-  },
+  put: <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> =>
+    service.put(url, data, config),
 
-  delete: <T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    return service.delete<T>(url, config).then((response) => response.data);
-  },
+  delete: <T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> =>
+    service.delete(url, config),
 
   // 暴露原始 instance 用于特殊需求
   instance: service,
