@@ -1,4 +1,4 @@
-import { SegmentControl } from "@/features/user/components/SegMentControl";
+import { SegmentControl } from "@/features/user/components/SegmentControl";
 import { UserAvatar } from "@/features/user/components/UserAvatar";
 import { UserProfile } from "@/features/user/components/UserProfile";
 import { UserSectionTabs } from "@/features/user/components/UserSectionTabs";
