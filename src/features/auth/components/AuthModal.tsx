@@ -18,15 +18,17 @@ export const AuthModal: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true); // isLogin = true 登录模态框，false 注册模态框
   const handleSwitch = () => setIsLogin(!isLogin); // 切换 Modal 登录 or 注册
   const { isAuthOpen, setAuthModalState } = useUIStore();
-  const { isAuthenticated } = useAuthGuard();
+  const { isAuthenticated, hasHydrated } = useAuthGuard();
+
   useEffect(() => {
-    // 如果用户未认证，打开登录模态框
-    if (!isAuthenticated) {
+    // 未登录时自动弹出一次；用户手动关闭后不会被立即强制重开
+    if (hasHydrated && !isAuthenticated) {
       setAuthModalState(true);
-    } else {
-      setAuthModalState(false);
     }
-  }, [isAuthenticated, setAuthModalState]);
+  }, [hasHydrated, isAuthenticated, setAuthModalState]);
+
+  if (!hasHydrated) return null; // 等待状态从存储加载完成，避免闪烁
+
   return (
     <AlertDialog open={isAuthOpen} onOpenChange={(o) => setAuthModalState(o)}>
       <AlertDialogTrigger asChild>
