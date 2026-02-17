@@ -5,10 +5,29 @@ import axios, {
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from "axios";
-import { useUIStore, useAuthStore } from "@/store";
+import z from "zod";
+import { useAuthStore } from "@/store";
 import { config } from "@/config";
+import { authResponseSchema } from "@/features/auth/schema";
 
-// 1. 创建 axios 实例 (推荐)
+type RetryableRequestConfig = InternalAxiosRequestConfig & {
+  _retry?: boolean;
+};
+
+const TokenSchema = authResponseSchema.shape.data;
+type TokenData = z.infer<typeof TokenSchema>;
+
+type ApiResponse<T = unknown> = {
+  status: number;
+  message: string;
+  data: T;
+};
+
+const handleAuthExpired = () => {
+  useAuthStore.getState().logout();
+};
+
+// 1. 创建 axios 实例
 const service: AxiosInstance = axios.create({
   baseURL: config.apiBaseUrl,
   timeout: 10 * 1000,
@@ -16,13 +35,58 @@ const service: AxiosInstance = axios.create({
     "Content-Type": "application/json;charset=utf-8",
   },
 });
+// 刷新 token 的 axios 实例，独立于主实例以避免请求拦截器的干扰
+const refreshClient: AxiosInstance = axios.create({
+  baseURL: config.apiBaseUrl,
+  timeout: 10 * 1000,
+  headers: {
+    "Content-Type": "application/json;charset=utf-8",
+  },
+});
+
+// 刷新 token 的 Promise，确保同时只有一个刷新请求在进行
+let refreshPromise: Promise<TokenData> | null = null;
+
+const getRefreshPromise = () => {
+  if (!refreshPromise) {
+    const refreshTokenValue = useAuthStore.getState().refresh_token;
+
+    if (!refreshTokenValue) {
+      handleAuthExpired();
+      return Promise.reject(new Error("登录已过期，请重新登录"));
+    }
+
+    refreshPromise = refreshClient
+      .post<ApiResponse<TokenData>>("/user/refresh", {
+        refresh_token: refreshTokenValue,
+      })
+      .then((refreshResponse) => {
+        const result = refreshResponse.data;
+
+        if (result.status !== 200 || !result.data?.access_token || !result.data?.refresh_token) {
+          throw new Error(result.message || "刷新令牌失败");
+        }
+
+        useAuthStore.getState().setTokens(result.data);
+        return result.data;
+      })
+      .catch(() => {
+        handleAuthExpired();
+        return Promise.reject(new Error("登录已过期，请重新登录"));
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+
+  return refreshPromise;
+};
 
 // 2. 请求拦截器
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem("token");
+    const token = useAuthStore.getState().access_token;
     if (token) {
-      // 这里的类型断言有助于通过 TS 检查，也可以用 config.headers.set('Authorization', ...)
       config.headers.Authorization = token;
     }
     return config;
@@ -35,10 +99,25 @@ service.interceptors.request.use(
 // 3. 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse) => {
-    let res = response.data;
-    // 拦截后端返回的错误
+    const res = response.data as ApiResponse;
+    const originalRequest = response.config as RetryableRequestConfig;
+
+    if (res.status === 403) {
+      if (originalRequest._retry) {
+        handleAuthExpired();
+        return Promise.reject(new Error("登录已过期，请重新登录"));
+      }
+
+      originalRequest._retry = true;
+
+      return getRefreshPromise()
+        .then(() => service.request(originalRequest))
+        .catch((error: Error) => Promise.reject(error));
+    }
+
     if (res.status !== 200) throw new Error(res.message);
-    return res;
+
+    return response;
   },
   (error: AxiosError) => {
     let message = "";
@@ -48,9 +127,7 @@ service.interceptors.response.use(
         break;
       case 401:
         message = "登录已过期，请重新登录";
-        // 显示登录弹窗
-        useUIStore.getState().setAuthModalState(true);
-        useAuthStore.getState().logout();
+        handleAuthExpired();
         break;
       case 403:
         message = "没有权限访问，请联系管理员";
@@ -81,22 +158,21 @@ service.interceptors.response.use(
 );
 
 // 4. 封装通用请求方法
-// 注意：由于拦截器已经返回了 response.data，所以这里返回类型直接就是 T
 const request = {
   get: <T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    return service.get(url, config);
+    return service.get<T>(url, config).then((response) => response.data);
   },
 
   post: <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> => {
-    return service.post(url, data, config);
+    return service.post<T>(url, data, config).then((response) => response.data);
   },
 
   put: <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> => {
-    return service.put(url, data, config);
+    return service.put<T>(url, data, config).then((response) => response.data);
   },
 
   delete: <T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    return service.delete(url, config);
+    return service.delete<T>(url, config).then((response) => response.data);
   },
 
   // 暴露原始 instance 用于特殊需求
