@@ -9,28 +9,35 @@ vi.mock("@/store/authStore", () => ({
 describe("useAuthGuard", () => {
   it("should return true when access_token and refresh_token are not empty", () => {
     // Arrange
-    vi.mocked(useAuthStore).mockReturnValue({
+    const mockState = {
       access_token: "random_access_token",
       refresh_token: "random_refresh_token",
-    });
+      _hasHydrated: true,
+    };
+
+    vi.mocked(useAuthStore).mockImplementation((selector) => selector(mockState));
     // Act
     const { result } = renderHook(() => useAuthGuard());
     // Assert
     expect(result.current).toEqual({
       isAuthenticated: true,
+      hasHydrated: true,
     });
   });
   it("should return false when access_token or refresh_token is empty", () => {
     // Arrange
-    vi.mocked(useAuthStore).mockReturnValue({
+    const mockState = {
       access_token: "",
       refresh_token: "random_refresh_token",
-    });
+      _hasHydrated: true,
+    };
+    vi.mocked(useAuthStore).mockImplementation((selector) => selector(mockState));
     // Act
     const { result } = renderHook(() => useAuthGuard());
     // Assert
     expect(result.current).toEqual({
       isAuthenticated: false,
+      hasHydrated: true,
     });
   });
 });

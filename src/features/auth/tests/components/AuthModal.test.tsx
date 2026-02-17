@@ -25,6 +25,7 @@ describe("AuthModal Component", () => {
     // Arrange
     vi.mocked(useAuthGuard).mockReturnValue({
       isAuthenticated: false,
+      hasHydrated: true,
     });
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,
@@ -40,6 +41,7 @@ describe("AuthModal Component", () => {
     // Arrange
     vi.mocked(useAuthGuard).mockReturnValue({
       isAuthenticated: true,
+      hasHydrated: true,
     });
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: false,
@@ -52,7 +54,7 @@ describe("AuthModal Component", () => {
   });
   it("should render register card when the user clicks the switch button.", () => {
     // Arrange
-    vi.mocked(useAuthGuard).mockReturnValue({ isAuthenticated: false });
+    vi.mocked(useAuthGuard).mockReturnValue({ isAuthenticated: false, hasHydrated: true });
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,
       setAuthModalState: vi.fn(),

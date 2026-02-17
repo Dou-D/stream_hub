@@ -34,6 +34,7 @@ describe("Register Component", () => {
   it("should render register form when switch to register", async () => {
     vi.mocked(useAuthGuard).mockReturnValue({
       isAuthenticated: false,
+      hasHydrated: true,
     });
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,
@@ -48,6 +49,7 @@ describe("Register Component", () => {
     // Arrange
     vi.mocked(useAuthGuard).mockReturnValue({
       isAuthenticated: false,
+      hasHydrated: true,
     });
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,
