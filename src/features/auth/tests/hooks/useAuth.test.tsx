@@ -48,9 +48,10 @@ describe("useAuth", () => {
       isAuthOpen: true,
     });
     vi.mocked(useAuthStore.getState).mockReturnValue({
-      user: null,
+      user_profile: null,
       access_token: null,
       refresh_token: null,
+      setHasHydrated: vi.fn(),
       logout: vi.fn(),
       setTokens: setTokensMock,
     });
