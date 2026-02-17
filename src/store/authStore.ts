@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { authResponseSchema } from "@/features/auth/schema";
+import z from "zod";
 
 interface UserProfile {
   avatar_url: string; // 头像
@@ -13,39 +15,43 @@ interface UserProfile {
   signature: string; // 签名
   work_count: number; // 作品数
 }
+const TokenSchema = authResponseSchema.shape.data;
+type TokenData = z.infer<typeof TokenSchema>;
 
-interface AuthState {
-  user: UserProfile | null;
-  access_token: string | null;
-  refresh_token: string | null;
-}
-type SetTokensParams = {
-  access_token: string;
-  refresh_token: string;
+type AuthState = TokenData & {
+  user_profile: UserProfile | null;
+  _hasHydrated?: boolean; // 是否已从存储加载状态
 };
+
 // 2. 定义操作方法 (Keys 和 Value 都是必要的)
 interface AuthActions {
-  setTokens: (params: SetTokensParams) => void;
+  setTokens: (params: TokenData) => void;
   logout: () => void;
+  setHasHydrated: (hasHydrated: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState & AuthActions>()(
   persist(
     (set) => ({
-      user: null,
+      user_profile: null,
       access_token: null,
       refresh_token: null,
+      _hasHydrated: false,
       setTokens: ({ access_token, refresh_token }) =>
         set({
           access_token,
           refresh_token,
         }),
       logout: () =>
+        /* 不用再手动控制Modal的开关了，直接清除 token 就好了，hooks/useAuthGuard 用来监听token变化
+        store/uiStore.ts控制Modal的开关
+        components/AuthModal.tsx 监听 hooks/useAuthGuard 的状态来控制 Modal 的显示 */
         set({
-          user: null,
+          user_profile: null,
           access_token: null,
           refresh_token: null,
         }),
+      setHasHydrated: (hasHydrated) => set({ _hasHydrated: hasHydrated }),
     }),
     {
       name: "token",
@@ -55,6 +61,9 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         access_token: state.access_token,
         refresh_token: state.refresh_token,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     },
   ),
 );
