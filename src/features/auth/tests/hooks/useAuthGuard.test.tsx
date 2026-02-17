@@ -13,6 +13,10 @@ describe("useAuthGuard", () => {
       access_token: "random_access_token",
       refresh_token: "random_refresh_token",
       _hasHydrated: true,
+      user_profile: null,
+      setHasHydrated: vi.fn(),
+      logout: vi.fn(),
+      setTokens: vi.fn(),
     };
 
     vi.mocked(useAuthStore).mockImplementation((selector) => selector(mockState));
@@ -30,6 +34,10 @@ describe("useAuthGuard", () => {
       access_token: "",
       refresh_token: "random_refresh_token",
       _hasHydrated: true,
+      user_profile: null,
+      setHasHydrated: vi.fn(),
+      logout: vi.fn(),
+      setTokens: vi.fn(),
     };
     vi.mocked(useAuthStore).mockImplementation((selector) => selector(mockState));
     // Act

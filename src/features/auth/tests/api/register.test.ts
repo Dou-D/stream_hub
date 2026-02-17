@@ -1,7 +1,10 @@
 import { register } from "@/features/auth/api";
 import request from "@/utils/request";
-import type { RegisterResponse } from "@/features/auth/api/register";
-import type { RegisterInputs } from "@/features/auth/components/RegisterCard";
+import type { authResponseSchema, registerSchema } from "@/features/auth/schema";
+import type z from "zod";
+
+type RegisterInputs = z.infer<typeof registerSchema>;
+type RegisterResponse = z.infer<typeof authResponseSchema>;
 
 vi.mock("@/utils/request", () => ({
   default: {
