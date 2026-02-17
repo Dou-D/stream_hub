@@ -28,6 +28,7 @@ describe("EmailInput Component", () => {
   it("should render error message when email input is invalid", async () => {
     vi.mocked(useAuthGuard).mockReturnValue({
       isAuthenticated: false,
+      hasHydrated: true,
     });
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,
@@ -47,6 +48,7 @@ describe("EmailInput Component", () => {
   it("should not render error message when email input is valid", async () => {
     vi.mocked(useAuthGuard).mockReturnValue({
       isAuthenticated: false,
+      hasHydrated: true,
     });
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,

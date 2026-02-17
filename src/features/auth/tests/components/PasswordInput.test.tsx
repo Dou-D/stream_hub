@@ -28,6 +28,7 @@ describe("PasswordInput Component", () => {
   it("should render error message when password input is invalid", async () => {
     vi.mocked(useAuthGuard).mockReturnValue({
       isAuthenticated: false,
+      hasHydrated: true,
     });
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,
@@ -47,6 +48,7 @@ describe("PasswordInput Component", () => {
   it("should not render error message when password input is valid", async () => {
     vi.mocked(useAuthGuard).mockReturnValue({
       isAuthenticated: false,
+      hasHydrated: true,
     });
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,
@@ -66,6 +68,7 @@ describe("PasswordInput Component", () => {
   it("should toggle password visibility when clicking eye button", async () => {
     vi.mocked(useAuthGuard).mockReturnValue({
       isAuthenticated: false,
+      hasHydrated: true,
     });
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,

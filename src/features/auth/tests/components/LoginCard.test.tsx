@@ -34,6 +34,7 @@ describe("LoginCard Component", () => {
     const setAuthModalStateMock = vi.fn();
     vi.mocked(useAuthGuard).mockReturnValue({
       isAuthenticated: false,
+      hasHydrated: true,
     });
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,
@@ -56,6 +57,7 @@ describe("LoginCard Component", () => {
     const setAuthModalStateMock = vi.fn();
     vi.mocked(useAuthGuard).mockReturnValue({
       isAuthenticated: false,
+      hasHydrated: true,
     });
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,
@@ -78,6 +80,7 @@ describe("LoginCard Component", () => {
     const setAuthModalStateMock = vi.fn();
     vi.mocked(useAuthGuard).mockReturnValue({
       isAuthenticated: false,
+      hasHydrated: true,
     });
     vi.mocked(useUIStore).mockReturnValue({
       isAuthOpen: true,
