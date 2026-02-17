@@ -16,8 +16,8 @@ const BaseLayout = () => {
       </aside>
 
       <div className="grid min-h-screen grid-rows-[64px_1fr] overflow-hidden">
-        <header className="bg-background/95 supports-[backdrop-filter]:bg-background/80 sticky top-0 z-20 border-b backdrop-blur">
-          <div className="mx-auto grid h-full w-full max-w-7xl grid-cols-[1fr_auto] items-center gap-4 px-4 sm:px-6">
+        <header className="bg-background/95 supports-backdrop-filter:bg-background/80 sticky top-0 z-20 border-b backdrop-blur">
+          <div className="mx-auto grid h-full w-full max-w-7xl grid-cols-[1fr_auto] items-center px-4 sm:px-6 max-lg:grid-cols-1 max-lg:justify-items-center max-lg:content-center">
             <Field className="w-full max-w-xl">
               <ButtonGroup className="w-full">
                 <Input
@@ -37,7 +37,7 @@ const BaseLayout = () => {
         </header>
 
         <main className="h-full overflow-y-auto">
-          <div className="mx-auto w-full max-w-7xl p-4 sm:p-6">
+          <div className="mx-auto w-full p-4 sm:p-6">
             <Outlet />
           </div>
         </main>
